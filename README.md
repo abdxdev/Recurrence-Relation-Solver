@@ -1,5 +1,7 @@
 # Recurrence Relation Solver
 
+![alt text](screenshots/screenshot_1.png)
+
 This is a Streamlit-based web application for solving recurrence relations using two popular methods:
 
 1. **Master's Theorem** - For recurrence relations of the forms:
@@ -20,7 +22,7 @@ pip install -r requirements.txt
 Run the application using the following command:
 
 ```bash
-streamlit run main.py
+streamlit run streamlit_app.py
 ```
 
 The web interface will open in your browser where you can:

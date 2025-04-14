@@ -1,6 +1,6 @@
 """
 ### Run using:
-`streamlit run main.py`
+`streamlit run streamlit_app.py`
 """
 
 import streamlit as st
