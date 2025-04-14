@@ -2,7 +2,7 @@
 
 ![alt text](screenshots/screenshot_1.png)
 
-This is a Streamlit-based web application for solving recurrence relations using two popular methods:
+This is a tool for solving recurrence relations using two popular methods:
 
 1. **Master's Theorem** - For recurrence relations of the forms:
    - T(n) = aT(n-b) + f(n) (Decreasing case)
@@ -10,6 +10,8 @@ This is a Streamlit-based web application for solving recurrence relations using
 
 2. **Akra-Bazzi Method** - For more complex recurrences with multiple terms:
    - T(n) = a₁T(n/b₁) + a₂T(n/b₂) + ... + f(n)
+
+Here is the link of the application: [Recurrence Relation Solver](https://recurrence-relation-solver.streamlit.app/)
 
 ## Installation
 
