@@ -2,7 +2,7 @@ import math
 
 
 class MastersTheorem:
-    def __init__(self, a, b, is_decreasing, k, p=None):
+    def __init__(self, a, b, is_decreasing, k, p):
         self.a = a
         self.b = b
         self.is_decreasing = is_decreasing
