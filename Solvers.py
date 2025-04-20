@@ -1,5 +1,6 @@
 import math
 
+
 class MastersTheorem:
     def __init__(self, a, b, is_decreasing, k, p=None):
         self.a = a
@@ -12,9 +13,7 @@ class MastersTheorem:
         result = self._calculate()
         if not result:
             return None
-
-        notation = "O" if self.is_decreasing else "\\Theta"
-        return f"{notation}({result})"
+        return f'{"O" if self.is_decreasing else r"\Theta"}({result})'
 
     def _calculate(self):
         if self.is_decreasing and self.a > 0 and self.b > 0 and self.k >= 0:
@@ -23,89 +22,87 @@ class MastersTheorem:
             return self._dividing_case()
 
     def _decreasing_case(self):
-        f_n = f"n^{self.k} log^{self.p}(n)"
+        f_n = rf"n^{{{self.k}}} \log^{{{self.p}}}(n)"
 
         if self.a < 1:
             return f_n
         elif self.a == 1:
-            return f"n*{f_n}"
+            return rf"n*{f_n}"
         elif self.a > 1:
-            return f"{self.a}^{{n/{self.b}}} {f_n}"
+            return rf"{self.a}^{{n/{self.b}}} {f_n}"
 
     def _dividing_case(self):
         log_b_a = math.log(self.a, self.b)
+        base_factor = rf"n^{{{self.k}}}"
 
         if log_b_a > self.k:
-            return f"n^{round(log_b_a, 2)}"
+            return rf"n^{{{log_b_a:.1f}}}"
         elif log_b_a == self.k:
             if self.p > -1:
-                return f"n^{self.k} log^{self.p + 1}(n)"
+                return rf"{base_factor} \log^{{{self.p + 1}}}(n)"
             elif self.p == -1:
-                return f"n^{self.k} log(log(n))"
+                return rf"{base_factor} \log(\log(n))"
             elif self.p < -1:
-                return f"n^{self.k}"
+                return base_factor
         elif log_b_a < self.k:
             if self.p >= 0:
-                return f"n^{self.k} log^{self.p}(n)"
+                return rf"{base_factor} \log^{{{self.p}}}(n)"
             elif self.p < 0:
-                return f"n^{self.k}"
+                return base_factor
 
 
 class AkraBazzi:
     def __init__(self, terms, k, p):
-        """
-        Initialize with:
-        - terms: list of tuples (a, b) representing a*T(n/b)
-        - k: the exponent of n in f(n) = n^k * log^p(n)
-        - p: the exponent of log in f(n)
-        """
         self.terms = terms
         self.k = k
         self.p = p
         self._p_value = None
+        self.tol = 0.01
 
-    def _characteristic_equation(self, p):
-        """Calculate sum(a_i * b_i^(-p)) - 1"""
+    def get_ans(self):
+        result = self._calculate()
+        if not result:
+            return None
+        return rf"\Theta({result})"
+
+    def _get_sum(self, p):
         return sum(a * (1 / b) ** p for a, b in self.terms) - 1
 
-    def _binary_search_p(self, low=0.1, high=10.0, tol=0.01, max_iter=100):
-        """Find root of characteristic equation using binary search"""
+    def _find_p(self, low=0.1, high=10.0, max_iter=100):
         iter_count = 0
-        while high - low > tol and iter_count < max_iter:
+        while high - low > self.tol and iter_count < max_iter:
+            iter_count += 1
             mid = (low + high) / 2
-            if self._characteristic_equation(mid) * self._characteristic_equation(low) < 0:
+            if self._get_sum(mid) * self._get_sum(low) < 0:
                 high = mid
             else:
                 low = mid
-            iter_count += 1
 
         mid_p = (low + high) / 2
-        if abs(self._characteristic_equation(mid_p)) < tol:
+        if abs(self._get_sum(mid_p)) < self.tol:
             return mid_p
+
         return None
 
-    def find_p(self):
-        """Find the p value that satisfies the characteristic equation"""
-        try:
-            p_estimate = self._binary_search_p()
-            if p_estimate is not None and p_estimate > 0:
-                self._p_value = p_estimate
-                return p_estimate
-            else:
-                return None
-        except:
+    def _calculate(self):
+        # T(n) = Θ(n^p · (1 + ∫₁ⁿ (g(u)/u^(p+1)) du))
+        self._p_value = self._find_p()
+        if not (self._p_value is not None and self._p_value >= 0):
             return None
+        
+        diff = self.k - self._p_value
+        base_factor = rf"n^{{{self._p_value:.1f}}}"
 
-    def get_ans(self):
-        """Get the LaTeX formatted answer"""
-        p = self._p_value if self._p_value is not None else self.find_p()
-
-        if p is None:
-            return None
-
-        if self.k > p:
-            return r"\Theta(n^{" + str(self.k) + r"})"
-        elif abs(self.k - p) < 0.01:
-            return r"\Theta(n^{" + str(self.k) + r"} \log n)"
-        else:
-            return r"\Theta(n^{" + str(round(p, 2)) + r"})"
+        if diff > self.tol:
+            return rf"{base_factor} n^{{{diff:.1f}}}"
+        elif abs(diff) <= self.tol:
+            if self.p == 0:
+                return rf"{base_factor} \log(n)"
+            elif self.p > 0:
+                return rf"{base_factor} \log^{{{self.p+1}}}(n)"
+            elif self.p == -1:
+                return rf"{base_factor} \log(\log(n))"
+            elif self.p < -1:
+                return base_factor
+        elif diff < -self.tol:
+            return base_factor
