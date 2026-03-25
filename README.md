@@ -1,6 +1,6 @@
 # Recurrence Relation Solver
 
-![alt text](screenshots/screenshot_1.png)
+![alt text](https://github.com/abdxdev/Recurrence-Relation-Solver/blob/main/screenshots/screenshot_1.png?raw=true)
 
 This is a tool for solving recurrence relations using two popular methods:
 
